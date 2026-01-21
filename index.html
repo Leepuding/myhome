@@ -1,12 +1,409 @@
 <!doctype html>
-<html>
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>leepudding · Home</title>
+  <meta name="description" content="leepudding personal home — links, notes, projects." />
+  <style>
+    :root{
+      --bg0:#060614;
+      --bg1:#0b0b22;
+      --fg:#eaf2ff;
+      --muted:#a8b4d6;
+      --line:rgba(255,255,255,.10);
+
+      --neon-cyan:#37f6ff;
+      --neon-pink:#ff4fd8;
+      --neon-violet:#9b7bff;
+      --neon-lime:#b7ff4a;
+
+      --card:rgba(255,255,255,.06);
+      --card2:rgba(0,0,0,.20);
+      --shadow:0 18px 60px rgba(0,0,0,.55);
+      --radius:18px;
+      --radius2:14px;
+
+      --max:1040px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "PingFang SC","Microsoft YaHei", Arial, "Noto Sans CJK SC", sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--fg);
+      background:
+        radial-gradient(1200px 600px at 10% 15%, rgba(55,246,255,.14), transparent 60%),
+        radial-gradient(900px 500px at 85% 20%, rgba(255,79,216,.12), transparent 60%),
+        radial-gradient(1000px 700px at 50% 90%, rgba(155,123,255,.10), transparent 65%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
+    }
+
+    /* subtle moving glow */
+    .glow{
+      position:fixed; inset:-20vmax;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(55,246,255,.10), transparent 45%),
+        radial-gradient(circle at 70% 40%, rgba(255,79,216,.08), transparent 48%),
+        radial-gradient(circle at 55% 75%, rgba(155,123,255,.08), transparent 55%);
+      filter: blur(30px);
+      animation: drift 16s ease-in-out infinite alternate;
+      pointer-events:none;
+      z-index:-2;
+    }
+    @keyframes drift{
+      from{transform: translate3d(-1.5%, -1.5%,0) scale(1.02)}
+      to{transform: translate3d(1.5%, 1.2%,0) scale(1.05)}
+    }
+
+    /* scanlines */
+    .scanlines{
+      position:fixed; inset:0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.035) 0px,
+        rgba(255,255,255,.035) 1px,
+        rgba(0,0,0,0) 3px,
+        rgba(0,0,0,0) 6px
+      );
+      opacity:.10;
+      mix-blend-mode: overlay;
+      pointer-events:none;
+      z-index:-1;
+    }
+
+    .wrap{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:42px 18px 70px;
+    }
+
+    header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
+      padding:18px 18px 10px;
+    }
+
+    .brand{
+      display:flex; flex-direction:column; gap:10px;
+    }
+
+    .tag{
+      font-family:var(--mono);
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:rgba(234,242,255,.75);
+      display:inline-flex; align-items:center; gap:8px;
+    }
+    .dot{
+      width:8px; height:8px; border-radius:50%;
+      background: radial-gradient(circle, var(--neon-cyan), rgba(55,246,255,.0) 70%);
+      box-shadow: 0 0 18px rgba(55,246,255,.8);
+    }
+
+    h1{
+      margin:0;
+      font-size:34px;
+      line-height:1.12;
+      letter-spacing:.02em;
+    }
+
+    .subtitle{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+      max-width:680px;
+    }
+
+    .pillrow{
+      display:flex; flex-wrap:wrap; gap:10px;
+      margin-top:12px;
+    }
+
+    .pill{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:rgba(234,242,255,.86);
+      display:inline-flex; align-items:center; gap:8px;
+      backdrop-filter: blur(10px);
+    }
+    .pill b{font-family:var(--mono); font-weight:600; color:rgba(234,242,255,.92)}
+    .pill .k{
+      padding:2px 6px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      color:rgba(234,242,255,.78);
+      font-family:var(--mono);
+      font-size:11px;
+    }
+
+    .panel{
+      margin-top:18px;
+      border-radius:var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.12));
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .panel::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: conic-gradient(from 180deg,
+        rgba(55,246,255,.0),
+        rgba(55,246,255,.25),
+        rgba(255,79,216,.22),
+        rgba(155,123,255,.22),
+        rgba(55,246,255,.0)
+      );
+      filter: blur(18px);
+      opacity:.55;
+      pointer-events:none;
+    }
+
+    .panel-inner{
+      position:relative;
+      padding:18px;
+      background:
+        radial-gradient(800px 300px at 15% 0%, rgba(55,246,255,.10), transparent 60%),
+        radial-gradient(700px 260px at 90% 10%, rgba(255,79,216,.08), transparent 60%),
+        rgba(5,6,20,.55);
+      backdrop-filter: blur(14px);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:14px;
+    }
+
+    @media (max-width: 880px){
+      header{flex-direction:column}
+      .grid{grid-template-columns:1fr}
+    }
+
+    .card{
+      border-radius:var(--radius2);
+      border:1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.18));
+      padding:14px;
+    }
+
+    .card h2{
+      margin:0 0 8px 0;
+      font-size:13px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:rgba(234,242,255,.75);
+      font-family:var(--mono);
+    }
+
+    .links{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap:10px;
+    }
+
+    @media (max-width: 520px){
+      .links{grid-template-columns:1fr}
+    }
+
+    a.tile{
+      text-decoration:none;
+      color:var(--fg);
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      border-radius:14px;
+      padding:12px 12px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+    a.tile:hover{
+      transform: translateY(-2px);
+      border-color: rgba(55,246,255,.38);
+      box-shadow: 0 0 0 1px rgba(55,246,255,.22), 0 20px 70px rgba(0,0,0,.55);
+    }
+    .tile .left{display:flex; flex-direction:column; gap:6px}
+    .tile .name{
+      font-weight:700;
+      letter-spacing:.02em;
+    }
+    .tile .desc{
+      font-size:12px;
+      color:rgba(234,242,255,.70);
+      line-height:1.4;
+    }
+    .tile .arrow{
+      font-family:var(--mono);
+      color:rgba(234,242,255,.55);
+      align-self:flex-start;
+    }
+
+    .mono{
+      font-family:var(--mono);
+      font-size:12px;
+      color:rgba(234,242,255,.74);
+      line-height:1.6;
+    }
+
+    .divider{
+      height:1px;
+      background: linear-gradient(90deg,
+        rgba(55,246,255,.0),
+        rgba(55,246,255,.25),
+        rgba(255,79,216,.20),
+        rgba(155,123,255,.20),
+        rgba(55,246,255,.0)
+      );
+      margin:12px 0;
+      opacity:.65;
+    }
+
+    .footer{
+      margin-top:16px;
+      display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      color:rgba(234,242,255,.55);
+      font-size:12px;
+      font-family:var(--mono);
+      padding:0 18px;
+    }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+    .spark{
+      width:10px; height:10px; border-radius:50%;
+      background: radial-gradient(circle, var(--neon-pink), rgba(255,79,216,0) 70%);
+      box-shadow: 0 0 18px rgba(255,79,216,.75);
+    }
+
+    /* reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      .glow{animation:none}
+      a.tile{transition:none}
+      a.tile:hover{transform:none}
+    }
+  </style>
 </head>
 <body>
-  <h1>leepudding · Home</h1>
-  <p><a href="https://memos.leepudding.xyz">Memos</a></p>
+  <div class="glow"></div>
+  <div class="scanlines"></div>
+
+  <div class="wrap">
+    <div class="panel">
+      <div class="panel-inner">
+        <header>
+          <div class="brand">
+            <div class="tag"><span class="dot"></span> personal node / leepudding</div>
+            <h1>leepudding · Home</h1>
+            <p class="subtitle">
+              个人主页入口：笔记、项目、常用服务。保持轻量、可维护、随时可扩展。
+            </p>
+            <div class="pillrow">
+              <span class="pill"><span class="k">STATUS</span> <b>ONLINE</b></span>
+              <span class="pill"><span class="k">STACK</span> <b>GitHub Pages</b></span>
+              <span class="pill"><span class="k">DNS</span> <b>Cloudflare</b></span>
+            </div>
+          </div>
+        </header>
+
+        <div class="grid">
+          <div class="card">
+            <h2>Links</h2>
+            <div class="links">
+              <a class="tile" href="https://memos.leepudding.xyz" target="_blank" rel="noreferrer">
+                <div class="left">
+                  <div class="name">Memos</div>
+                  <div class="desc">备忘录 / 随记 / 灵感库</div>
+                </div>
+                <div class="arrow">↗</div>
+              </a>
+
+              <a class="tile" href="https://github.com/Leepuding" target="_blank" rel="noreferrer">
+                <div class="left">
+                  <div class="name">GitHub</div>
+                  <div class="desc">代码仓库 / 项目维护</div>
+                </div>
+                <div class="arrow">↗</div>
+              </a>
+
+              <a class="tile" href="#" onclick="alert('把你的常用链接替换到这里即可'); return false;">
+                <div class="left">
+                  <div class="name">Dashboard</div>
+                  <div class="desc">常用系统入口（可自定义）</div>
+                </div>
+                <div class="arrow">→</div>
+              </a>
+
+              <a class="tile" href="#" onclick="alert('把你的联系方式/社媒链接替换到这里即可'); return false;">
+                <div class="left">
+                  <div class="name">Contact</div>
+                  <div class="desc">邮件 / 社媒 / 其他</div>
+                </div>
+                <div class="arrow">→</div>
+              </a>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="mono">
+              <div><b>Quick edit</b>：直接改 <code>index.html</code> 里的链接和文字即可。</div>
+              <div><b>Tip</b>：你可以把常用入口（云盘、工具、服务）都做成 tile。</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Now</h2>
+            <div class="mono">
+              <div class="badge"><span class="spark"></span> Cyberpunk UI · Neon + Glass</div>
+              <div style="height:10px"></div>
+              <div><b>Domain</b>：home.leepudding.xyz</div>
+              <div><b>Update</b>：push to main → auto publish</div>
+              <div><b>Next</b>：</div>
+              <ul style="margin:8px 0 0 18px; padding:0; color:rgba(234,242,255,.70)">
+                <li>补充“项目列表 / 简介”</li>
+                <li>加一张头像或像素风 Logo（可选）</li>
+                <li>加一个“最近笔记”区块（静态）</li>
+              </ul>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="mono">
+              <div><b>Theme vars</b>：在 CSS 的 <code>:root</code> 里改颜色即可。</div>
+              <div><b>Safe</b>：纯静态，无第三方依赖。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>© <span id="y"></span> leepudding</span>
+      <span class="mono">signal: <span style="color:rgba(55,246,255,.9)">stable</span> · protocol: <span style="color:rgba(255,79,216,.9)">https</span></span>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("y").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
-
